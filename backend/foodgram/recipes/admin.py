@@ -65,7 +65,6 @@ admin.site.register(Tags, TagsAdmin)
 admin.site.register(Ingredients, IngredientsAdmin)
 admin.site.register(RecipeTag, RecipeTagAdmin)
 admin.site.register(RecipeIngredient, RecipeIngredientAdmin)
-
 admin.site.register(Follow, FollowAdmin)
 admin.site.register(Favourites, FavouritesAdmin)
 admin.site.register(Shoplist, ShoplistAdmin)

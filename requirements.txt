@@ -14,3 +14,4 @@ djoser==2.1.0
 django-filter==22.1
 drf-extra-fields==3.4.0
 reportlab==3.6.11
+flake8==5.0.4
