@@ -1,7 +1,8 @@
 import os
+from datetime import timedelta
+from pathlib import Path
 
 from dotenv import load_dotenv
-from pathlib import Path
 
 load_dotenv()
 
@@ -30,11 +31,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
     'rest_framework',
+    'django_filters',
+    'corsheaders',
+    'rest_framework.authtoken',
+    'djoser',
     'api',
     'recipes',
-
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -120,13 +124,38 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Настройка  CORS
+# Настройка CORS
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost',
+    'http://localhost:3000',
 ]
 CORS_URLS_REGEX = r'^/api/.*$'
+
+# Переопределение пользовательской модели
+AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    'SEARCH_PARAM': 'name',
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6,
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+}
