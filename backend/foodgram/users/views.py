@@ -71,13 +71,14 @@ class FollowAddViewSet(viewsets.ModelViewSet):
         data_my = {
             'user': request.user.id,
             'author': kwargs.get('id')
-
         }
         serializer = self.get_serializer(data=data_my)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer, *args, **kwargs):
+        serializer.save(serializer.validated_data)
 
     def destroy(self, request, *args, **kwargs):
         followed = kwargs.get('id')

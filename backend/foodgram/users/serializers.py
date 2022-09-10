@@ -149,7 +149,6 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class FollowAddSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Follow
         fields = '__all__'
@@ -161,12 +160,12 @@ class FollowAddSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def create(self, validated_data):
-        user = validated_data.pop('user')
-        author = validated_data.pop('author')
-        follow = Follow.objects.create(user=user, author=author)
-        follow.save()
-        return follow
+    # def create(self, validated_data):
+    #     user = validated_data.pop('user')
+    #     author = validated_data.pop('author')
+    #     follow = Follow.objects.create(user=user, author=author)
+    #     follow.save()
+    #     return follow
 
     def validate(self, data):
         if data['user'] == data['author']:

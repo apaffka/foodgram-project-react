@@ -5,9 +5,8 @@ from api.filters import RecipesFilter
 from api.permissions import IsAuthorOrReadOnly
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from foodgram.settings import BASE_DIR
 from recipes.models import (Favourites, Ingredients, RecipeIngredient, Recipes,
-                            Shoplist, Tags)
+                            RecipeTag, Shoplist, Tags)
 from recipes.serializers import (FavouriteSerializer, IngredientsSerializer,
                                  RecipeAddUpdateSerializer, RecipesSerializer,
                                  ShoppingSerializer, TagSerializer)
@@ -20,6 +19,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
+from foodgram.settings import BASE_DIR
 
 
 class TagViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
@@ -57,6 +58,70 @@ class RecipesViewSet(viewsets.ModelViewSet):
         context.update({"request": self.request})
         return context
 
+    def create(self, request, *args, **kwargs):
+        request.data['author'] = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ingredients = serializer.validated_data.pop('ingredients')
+        instance = serializer.save(author=request.user)
+        for ing in ingredients:
+            RecipeIngredient.objects.bulk_create([RecipeIngredient(
+                recipes=instance,
+                amount=ing['amount'],
+                ingredients=ing['ingredients'])])
+
+        # for ing in ingredients:
+        #     RecipeIngredient.objects.create(
+        #             recipes=instance,
+        #             amount=ing['amount'],
+        #             ingredients=ing['ingredients']
+        #         )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer, *args, **kwargs):
+        serializer.save(serializer.validated_data)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data,
+                                         partial=True)
+        serializer.is_valid(raise_exception=True)
+        ingredients = serializer.validated_data.pop('ingredients')
+        tags = serializer.validated_data.pop('tags')
+        RecipeIngredient.objects.filter(recipes=instance).delete()
+        RecipeTag.objects.filter(recipes=instance).delete()
+        instance.name = serializer.validated_data.pop('name')
+        instance.text = serializer.validated_data.pop('text')
+        if serializer.validated_data.get('image') is not None:
+            instance.image = serializer.validated_data.pop('image')
+        instance.cooking_time = serializer.validated_data.pop('cooking_time')
+        instance.tags.set(tags)
+        for ing in ingredients:
+            RecipeIngredient.objects.bulk_create([RecipeIngredient(
+                recipes=instance,
+                amount=ing['amount'],
+                ingredients=ing['ingredients'])])
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+
+        # ingredients = validated_data.pop('ingredients')
+        # tags = validated_data.pop('tags')
+        # RecipeIngredient.objects.filter(recipes=instance).delete()
+        # RecipeTag.objects.filter(recipes=instance).delete()
+        # instance.name = validated_data.pop('name')
+        # instance.text = validated_data.pop('text')
+        # if validated_data.get('image') is not None:
+        #     instance.image = validated_data.pop('image')
+        # instance.cooking_time = validated_data.pop('cooking_time')
+        # instance.tags.set(tags)
+        # for ingredient in ingredients:
+        #     RecipeIngredient.objects.create(
+        #         recipes=instance,
+        #         amount=ingredient['amount'],
+        #         ingredients=ingredient['ingredients']
+        #     )
+        # return instance
 
 class FavouriteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -71,10 +136,12 @@ class FavouriteViewSet(viewsets.ModelViewSet):
 
         }
         serializer = self.get_serializer(data=data_my)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer, *args, **kwargs):
+        serializer.save(serializer.validated_data)
 
     def destroy(self, request, *args, **kwargs):
         favourite = kwargs.get('id')
@@ -95,21 +162,24 @@ class ShoplistViewSet(viewsets.ModelViewSet):
         data_my = {
             'user': request.user.id,
             'recipe': kwargs.get('id')
-
         }
         serializer = self.get_serializer(data=data_my)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer, *args, **kwargs):
+        serializer.save(serializer.validated_data)
 
     def destroy(self, request, *args, **kwargs):
         favourite = kwargs.get('id')
-        Shoplist.objects.filter(
-            user=request.user.id,
-            recipe=favourite
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if Shoplist.objects.filter(user=request.user.id, recipe=favourite):
+            Shoplist.objects.filter(
+                user=request.user.id,
+                recipe=favourite
+            ).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopListDownload(views.APIView):
@@ -121,6 +191,10 @@ class ShopListDownload(views.APIView):
         ingredients = RecipeIngredient.objects.filter(
             recipes__shop_list__user=request.user
         )
+        # Проверяем, есть ли данные в списке
+        if len(ingredients) == 0:
+            return Response('В списке покупок нет данных!')
+
         for ing in ingredients:
             name = ing.ingredients.name
             amount = ing.amount

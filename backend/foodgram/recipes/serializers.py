@@ -69,40 +69,6 @@ class RecipeAddUpdateSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
 
-    def create(self, validated_data):
-        request = self.context.get('request')
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
-        recipe = Recipes.objects.create(author=request.user, **validated_data)
-        recipe.save()
-        recipe.tags.set(tags)
-        for ingredient in ingredients:
-            RecipeIngredient.objects.create(
-                recipes=recipe,
-                amount=ingredient['amount'],
-                ingredients=ingredient['ingredients']
-            )
-        return recipe
-
-    def update(self, instance, validated_data):
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
-        RecipeIngredient.objects.filter(recipes=instance).delete()
-        RecipeTag.objects.filter(recipes=instance).delete()
-        instance.name = validated_data.pop('name')
-        instance.text = validated_data.pop('text')
-        if validated_data.get('image') is not None:
-            instance.image = validated_data.pop('image')
-        instance.cooking_time = validated_data.pop('cooking_time')
-        instance.tags.set(tags)
-        for ingredient in ingredients:
-            RecipeIngredient.objects.create(
-                recipes=instance,
-                amount=ingredient['amount'],
-                ingredients=ingredient['ingredients']
-            )
-        return instance
-
     def validate_cooking_time(self, data):
         cooking_time = self.initial_data.get('cooking_time')
         if int(cooking_time) <= 0:
@@ -174,12 +140,12 @@ class FavouriteSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def create(self, validated_data):
-        user = validated_data.pop('user')
-        recipe = validated_data.pop('recipe')
-        favourite = Favourites.objects.create(user=user, recipe=recipe)
-        favourite.save()
-        return favourite
+    # def create(self, validated_data):
+    #     user = validated_data.pop('user')
+    #     recipe = validated_data.pop('recipe')
+    #     favourite = Favourites.objects.create(user=user, recipe=recipe)
+    #     favourite.save()
+    #     return favourite
 
     def to_representation(self, instance):
         representation = RecipeSmallSerializer(
@@ -201,12 +167,12 @@ class ShoppingSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def create(self, validated_data):
-        user = validated_data.pop('user')
-        recipe = validated_data.pop('recipe')
-        favourite = Shoplist.objects.create(user=user, recipe=recipe)
-        favourite.save()
-        return favourite
+    # def create(self, validated_data):
+    #     user = validated_data.pop('user')
+    #     recipe = validated_data.pop('recipe')
+    #     favourite = Shoplist.objects.create(user=user, recipe=recipe)
+    #     favourite.save()
+    #     return favourite
 
     def to_representation(self, instance):
         representation = RecipeSmallSerializer(
