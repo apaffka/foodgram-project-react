@@ -132,5 +132,4 @@ dmypy.json
 .idea
 
 # media files
-backend/foodgram/media/
 frontend/node_modules/
