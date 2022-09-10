@@ -5,6 +5,7 @@ from api.filters import RecipesFilter
 from api.permissions import IsAuthorOrReadOnly
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from foodgram.settings import BASE_DIR
 from recipes.models import (Favourites, Ingredients, RecipeIngredient, Recipes,
                             RecipeTag, Shoplist, Tags)
 from recipes.serializers import (FavouriteSerializer, IngredientsSerializer,
@@ -19,7 +20,6 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from foodgram.settings import BASE_DIR
 
 
 class TagViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
