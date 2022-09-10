@@ -69,13 +69,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 recipes=instance,
                 amount=ing['amount'],
                 ingredients=ing['ingredients'])])
-
-        # for ing in ingredients:
-        #     RecipeIngredient.objects.create(
-        #             recipes=instance,
-        #             amount=ing['amount'],
-        #             ingredients=ing['ingredients']
-        #         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer, *args, **kwargs):
