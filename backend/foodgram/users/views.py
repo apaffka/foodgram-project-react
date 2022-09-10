@@ -24,9 +24,13 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def me(self, request):
         user = request.user
+        serializer = self.get_serializer(user)
         if request.method == 'GET':
-            serializer = self.get_serializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
     @action(
         detail=False,
@@ -52,8 +56,7 @@ class FollowListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         user = get_object_or_404(User, id=self.request.user.pk)
-        new_queryset = user.follower.all()
-        return new_queryset
+        return user.follower.all()
 
 
 class FollowAddViewSet(viewsets.ModelViewSet):

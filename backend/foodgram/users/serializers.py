@@ -50,12 +50,10 @@ class UserSerializer(serializers.ModelSerializer):
         return make_password(value)
 
     def validate_first_name(self, value):
-        capital_value = value.capitalize()
-        return capital_value
+        return value.capitalize()
 
     def validate_last_name(self, value):
-        capital_value = value.capitalize()
-        return capital_value
+        return value.capitalize()
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

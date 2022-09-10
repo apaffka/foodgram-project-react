@@ -87,11 +87,10 @@ class RecipeAddUpdateSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        representation = RecipesSerializer(
+        return RecipesSerializer(
             instance,
             context={'request': self.context.get('request')}
         ).data
-        return representation
 
 
 class RecipesSerializer(serializers.ModelSerializer):
@@ -140,19 +139,11 @@ class FavouriteSerializer(serializers.ModelSerializer):
             )
         ]
 
-    # def create(self, validated_data):
-    #     user = validated_data.pop('user')
-    #     recipe = validated_data.pop('recipe')
-    #     favourite = Favourites.objects.create(user=user, recipe=recipe)
-    #     favourite.save()
-    #     return favourite
-
     def to_representation(self, instance):
-        representation = RecipeSmallSerializer(
+        return RecipeSmallSerializer(
             instance.recipe,
             context={'request': self.context.get('request')}
         ).data
-        return representation
 
 
 class ShoppingSerializer(serializers.ModelSerializer):
@@ -167,16 +158,8 @@ class ShoppingSerializer(serializers.ModelSerializer):
             )
         ]
 
-    # def create(self, validated_data):
-    #     user = validated_data.pop('user')
-    #     recipe = validated_data.pop('recipe')
-    #     favourite = Shoplist.objects.create(user=user, recipe=recipe)
-    #     favourite.save()
-    #     return favourite
-
     def to_representation(self, instance):
-        representation = RecipeSmallSerializer(
+        return RecipeSmallSerializer(
             instance.recipe,
             context={'request': self.context.get('request')}
         ).data
-        return representation
