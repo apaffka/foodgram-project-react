@@ -1,6 +1,6 @@
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (Favourites, Ingredients, RecipeIngredient, Recipes,
-                            RecipeTag, Shoplist, Tags)
+                            Shoplist, Tags)
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from users.serializers import UserSerializer

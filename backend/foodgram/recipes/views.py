@@ -105,24 +105,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-        # ingredients = validated_data.pop('ingredients')
-        # tags = validated_data.pop('tags')
-        # RecipeIngredient.objects.filter(recipes=instance).delete()
-        # RecipeTag.objects.filter(recipes=instance).delete()
-        # instance.name = validated_data.pop('name')
-        # instance.text = validated_data.pop('text')
-        # if validated_data.get('image') is not None:
-        #     instance.image = validated_data.pop('image')
-        # instance.cooking_time = validated_data.pop('cooking_time')
-        # instance.tags.set(tags)
-        # for ingredient in ingredients:
-        #     RecipeIngredient.objects.create(
-        #         recipes=instance,
-        #         amount=ingredient['amount'],
-        #         ingredients=ingredient['ingredients']
-        #     )
-        # return instance
-
 class FavouriteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Favourites.objects.all()
