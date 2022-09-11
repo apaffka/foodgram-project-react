@@ -59,3 +59,4 @@ jobs:
             sudo docker-compose rm backend
             sudo docker stop $(sudo docker ps -a -q)
             sudo docker-compose up -d
+            
