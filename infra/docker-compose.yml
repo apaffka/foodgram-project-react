@@ -12,15 +12,12 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: apaffka/foodfront:v1.0
     volumes:
       - ../frontend/:/app/result_build/
 
   web:
-    build: ../backend/foodgram/
-    restart: always
+    image: apaffka/foodback:v1.2
     volumes:
       - static_value:/mycode/static/
       - media_value:/mycode/media/

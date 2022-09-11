@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='anytext')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', default='False')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['84.201.165.95', 'pagapov.ru', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -122,7 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
