@@ -1,3 +1,4 @@
+![yamdb_workflow](https://github.com/apaffka/foodgram-project-react/actions/workflows/foodgram.yml/badge.svg)
 ## Дипломный проект Yandex Practicum: Foodgram «Продуктовый помощник»
 ### Проект позволяет пользователям сайта:
 На этом сервисе пользователи смогут публиковать рецепты,
@@ -12,6 +13,16 @@
 http://localhost/api/docs/redoc.html  
 Там вы можете ознакомиться с эндпоинтами и методами, а также с примерами запросов, ответов и кода.
 
+
+### Рабочая версия сайта
+http://pagapov.ru
+
+### Админка  
+http://pagapov.ru/admin/
+
+Учётные данные админа:  
+login: admin
+password: 12tetraST
 
 
 
